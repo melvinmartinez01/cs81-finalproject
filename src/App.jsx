@@ -6,6 +6,7 @@ import WurpPanel from "./components/WurpPanel";
 import RoomGrid from "./components/RoomGrid";
 import CommandConsole from "./components/CommandConsole";
 import ActivityLog from "./components/ActivityLog";
+import CommandHelp from "./components/CommandHelp";
 
 const initialState = {
   rooms: {
@@ -120,6 +121,7 @@ export default function App() {
       <main className="mainGrid">
         <section className="panel">
           <WurpPanel lastReply={state.lastReply} summary={summary} />
+          <CommandHelp />
           <CommandConsole
             commandText={commandText}
             setCommandText={setCommandText}

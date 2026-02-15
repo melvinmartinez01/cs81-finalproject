@@ -23,3 +23,12 @@
     grid-column: 1 / -1;
   }
 }
+
+.cmdList {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.cmdList code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
