@@ -72,4 +72,4 @@ _______________
 - Responsive layout techniques
 _______________
 
-Thank you for this class Professor Vicky Seno. The idea of creating a form of AI has been the main topic in my conversations with my friends and my partner. My friends are taught and guided me through this journey, first with C programming, and then Python. Learning JavaScript has been the best and funnest language I have learned so far.  
+Thank you for this class Professor Vicky Seno. The idea of creating a form of AI has been the main topic in my conversations with my friends and my partner. My friends have taught and guided me through this journey, first with C programming, and then Python. Learning JavaScript has been the best and funnest language I have learned so far.  
