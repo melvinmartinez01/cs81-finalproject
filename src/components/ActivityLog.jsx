@@ -1,19 +1,26 @@
-export default function ActivityLog({items}) {
+export default function ActivityLog({ items }) {
   return (
-    <div className="pad">
-      <h2>Activity Log</h2>
+    <div style={{ padding: 16 }}>
+      <h2 style={{ marginTop: 0 }}>Activity Log</h2>
 
       {items.length === 0 ? (
-        <p className="muted">No activity yet. Try a command.</p>
+        <p style={{ opacity: 0.7 }}>No activity yet. Try a command.</p>
       ) : (
-        <div className="logList">
+        <div style={{ display: "grid", gap: 10 }}>
           {items.map((item) => (
-            <div key={item.id} className="logItem">
-              <div className="logTop">
+            <div
+              key={item.id}
+              style={{
+                border: "1px solid #ddd",
+                borderRadius: 12,
+                padding: 10,
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <strong>{item.type}</strong>
-                <span className="muted">{item.item}</span>
+                <span style={{ opacity: 0.7 }}>{item.time}</span>
               </div>
-              <div style={{marginTop: 6}}>{item.message}</div>
+              <div style={{ marginTop: 6 }}>{item.message}</div>
             </div>
           ))}
         </div>

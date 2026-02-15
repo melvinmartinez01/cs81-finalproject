@@ -80,39 +80,140 @@ export default function App() {
     }));
   }
 
-  function handleSubmitCommand(e) {
-    e.preventDefault();
-    const raw = commandText.trim();
+function handleSubmitCommand(e) {
+  e.preventDefault();
+  const raw = commandText.trim();
 
-    if(!raw) {
-      setReply("Sir... issuing an empty command might just be an interesting strategy for uh... you.");
+  if (!raw) {
+    setReply("Sir… issuing an empty command is an interesting strategy.");
+    return;
+  }
+
+  const cmd = raw.toLowerCase();
+  addLog("COMMAND", raw);
+
+  // helper: update a specific room safely
+  function updateRoom(roomKey, updater) {
+    setState((prev) => {
+      const currentRoom = prev.rooms[roomKey];
+      const updatedRoom = updater(currentRoom);
+
+      return {
+        ...prev,
+        rooms: {
+          ...prev.rooms,
+          [roomKey]: updatedRoom,
+        },
+      };
+    });
+  }
+
+  // 1) UNLOCK DOGGY DOOR (Bathroom)
+  if (cmd.includes("unlock") && cmd.includes("doggy door")) {
+    updateRoom("bathroom", (room) => ({ ...room, doggyDoorLocked: false }));
+    addLog("ACTION", "Doggy door unlocked (Bathroom).");
+    setReply("Doggy door unlocked. Let’s hope Theo doesn’t start a side quest.");
+    setCommandText("");
+    return;
+  }
+
+  // 2) LOCK DOGGY DOOR (extra polish)
+  if (cmd.includes("lock") && cmd.includes("doggy door")) {
+    updateRoom("bathroom", (room) => ({ ...room, doggyDoorLocked: true }));
+    addLog("ACTION", "Doggy door locked (Bathroom).");
+    setReply("Doggy door locked. Master Theo is now secure.");
+    setCommandText("");
+    return;
+  }
+
+  // 3) TOILET PAPER (Bathroom)
+  if (cmd.includes("toilet paper")) {
+    updateRoom("bathroom", (room) => ({
+      ...room,
+      supplies: {
+        ...room.supplies,
+        toiletPaper: room.supplies.toiletPaper + 1,
+      },
+    }));
+    addLog("ACTION", "Dispensed 1 toilet paper (Bathroom).");
+    setReply("Your toilet paper sir. Try not to forget next time.");
+    setCommandText("");
+    return;
+  }
+
+  // 4) LIGHTS ON/OFF (Bathroom/Kitchen/Living/Master)
+  const roomAliases = [
+    { key: "bathroom", words: ["bathroom"] },
+    { key: "kitchen", words: ["kitchen"] },
+    { key: "livingRoom", words: ["living room", "livingroom"] },
+    { key: "masterBedroom", words: ["master bedroom", "masterbedroom", "bedroom"] },
+  ];
+
+  const matchedRoom = roomAliases.find((r) => r.words.some((w) => cmd.includes(w)));
+
+  if (cmd.includes("lights") && (cmd.includes("turn on") || cmd.includes("turn off")) && matchedRoom) {
+    const turnOn = cmd.includes("turn on");
+    updateRoom(matchedRoom.key, (room) => ({ ...room, lightsOn: turnOn }));
+    addLog("ACTION", `Lights ${turnOn ? "ON" : "OFF"} (${matchedRoom.key}).`);
+    setReply(turnOn ? "Lights on... Honestly Master Bubba, wear a shirt." : "Lights off. Hiding in the dark sir?");
+    setCommandText("");
+    return;
+  }
+
+  // 5) DISPENSE ICE WATER (Kitchen)
+  if (cmd.includes("dispense") && cmd.includes("ice water")) {
+    updateRoom("kitchen", (room) => ({
+      ...room,
+      water: { ...room.water, ice: true, cold: true },
+    }));
+    addLog("ACTION", "Dispensed ice water (Kitchen).");
+    setReply("Ice water is ready. Hydration… what a concept.");
+    setCommandText("");
+    return;
+  }
+
+  // 6) PLAY MUSIC (Living/Master)
+  if (cmd.includes("play") && cmd.includes("music") && matchedRoom) {
+    updateRoom(matchedRoom.key, (room) => ({
+      ...room,
+      musicPlaying: true,
+      nowPlaying: "Lo-fi (simulated)",
+    }));
+    addLog("ACTION", `Music started (${matchedRoom.key}).`);
+    setReply("Music engaged. I’ll pretend this is tasteful.");
+    setCommandText("");
+    return;
+  }
+
+  // 7) CALL CONTACTS (Mom, Samantha, Burger Palace)
+  if (cmd.startsWith("call ")) {
+    if (cmd.includes("mom")) {
+      addLog("ACTION", "Calling Mom (simulated).");
+      setReply("Calling your mother.");
+      setCommandText("");
       return;
     }
 
-    addLog("COMMAND", raw);
-
-    const lower = raw.toLowerCase();
-
-    //Placeholder logic
-    if (lower.includes("lights")) {
-      addLog("ACTION", "Lights command received.");
-      setReply("Very well, Master Bubba. Illumination protocols acknowledged.");
-    } else if (lower.includes("toilet paper")) {
-      addLog("ACTION", "Bathroom supply request logged.");
-      setReply("Of course, Master Bubba. Because preparedness is clearly optional, apparently.");
-    } else if (lower.includes("play music")) {
-      addLog("ACTION", "Music command commencing.");
-      setReply("Initiating music playback, Master Bubba. Because silence is just too mainstream, right?");
-    } else if (lower.includes("lock doggy door")) {
-      addLog("ACTION", "Doggy door lock command executed.");
-      setReply("Locking the doggy door for Master Theo. Honestly, Master Bubba, you should accompany the canine for a walk or a hike instead of fattening him up.");
-    } else {
-      addLog("INFO", "Command logged.");
-      setReply("Command received but not acknowledged, Master Bubba. Either you're speaking in tongues or I'm on a new episode of PUNK'D.");
+    if (cmd.includes("samantha")) {
+      addLog("ACTION", "Calling Samantha (simulated).");
+      setReply("Calling the wife Master Bubba.");
+      setCommandText("");
+      return;
     }
 
-    setCommandText("");
+    if (cmd.includes("burger palace")) {
+      addLog("ACTION", "Calling The Burger Palace (simulated): Breakfast Burrito, no cheese, all bacon.");
+      setReply("Placing order: Breakfast Burrito, no cheese, all bacon. Your arteries send their regards.");
+      setCommandText("");
+      return;
+    }
   }
+
+  // Fallback
+  addLog("INFO", "Command received but not recognized.");
+  setReply("Command received but not understood. Either you're speaking in riddles—or I'm being tested.");
+  setCommandText("");
+}
 
   return (
     <div className="appShell">
